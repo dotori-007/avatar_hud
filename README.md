@@ -2,10 +2,10 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
-[![OS Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS-blue.svg)](#macos-macbook-호환-지원)
-[![CLI Support](https://img.shields.io/badge/CLI-Antigravity%20%7C%20Codex%20%7C%20Claude-blueviolet.svg)](#3대-ai-cli-지원-안내)
+[![OS Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#1-os별-상세-셋업-가이드)
+[![CLI Support](https://img.shields.io/badge/CLI-Antigravity%20%7C%20Codex%20%7C%20Claude-blueviolet.svg)](#2-사용하는-ai-cli별-상세-셋업-가이드)
 
-사용자가 지정한 투명 누끼 스탠딩 인물/캐릭터(Transparent Cutout Standing PNG)가 윈도우 및 맥북(macOS) 바탕화면에 자연스럽게 상시 상주하며, Antigravity CLI, Codex CLI, Claude CLI 에이전트의 실시간 작업 상태와 최종 완료 보고를 시각화해 주는 초경량 데스크톱 HUD 시스템입니다.
+사용자가 지정한 투명 누끼 스탠딩 인물/캐릭터(Transparent Cutout Standing PNG)가 윈도우, 맥북(macOS), 리눅스 바탕화면에 자연스럽게 상시 상주하며, Antigravity CLI, Codex CLI, Claude CLI 에이전트의 실시간 작업 상태와 최종 완료 보고를 시각화해 주는 초경량 데스크톱 HUD 시스템입니다.
 
 ---
 
@@ -13,8 +13,8 @@
 
 1. **오로지 투명 누끼 스탠딩 모드 전용 (Transparent Cutout Standing Only)**:
    - 불필요한 사각 박스나 불투명 프레임을 배제하고, 배경이 투명한 인물/캐릭터 스탠딩 일러스트만 바탕화면에 자연스럽게 렌더링됩니다.
-2. **크로스 플랫폼 지원 (Windows & macOS MacBook)**:
-   - 윈도우 데스크톱 및 Apple Silicon(M1/M2/M3/M4) / Intel MacBook 환경 완벽 지원.
+2. **크로스 플랫폼 지원 (Windows, macOS MacBook, Linux)**:
+   - 윈도우 데스크톱 및 Apple Silicon(M1/M2/M3/M4) / Intel MacBook, Linux 환경 지원.
    - macOS Cocoa WKWebView 기반 투명 프레임 및 Mission Control 가상 데스크톱(Spaces) 상주 지원.
 3. **상시 스탠딩 상주 (Persistent Desktop Companion)**:
    - 화면에서 숨거나 사라지지 않고 항상 바탕화면(원하는 위치)에 상주합니다.
@@ -57,6 +57,7 @@ flowchart TD
     subgraph Platforms["운영체제별 뷰포트"]
         WinView["Windows 투명 오버레이<br/>(DWM Webview2)"]
         MacView["macOS 투명 오버레이<br/>(Cocoa WKWebView)"]
+        LinuxView["Linux 투명 오버레이<br/>(WebKitGTK)"]
     end
 
     subgraph Overlay["투명 데스크톱 뷰"]
@@ -72,10 +73,13 @@ flowchart TD
     State --> Stream
     Stream --> WinView
     Stream --> MacView
+    Stream --> LinuxView
     WinView --> Standing
     WinView --> Bubble
     MacView --> Standing
     MacView --> Bubble
+    LinuxView --> Standing
+    LinuxView --> Bubble
 ```
 
 ---
@@ -129,74 +133,151 @@ avatar_hud/
 
 ---
 
-## 빠른 시작 (Quick Start)
+## 1. OS별 상세 셋업 가이드
 
-### Windows 환경
-```bash
-# 1) 패키지 설치
-pip install -r requirements.txt
+### A. Windows 환경 (Windows 10 / 11)
 
-# 2) 실행 (원클릭)
-run.bat
-```
-
-### macOS (MacBook) 환경
-```bash
-# 1) 맥북 환경 설정 (가상환경 생성 및 PyObjC 의존성 자동 설치)
-./macos/setup_mac.sh
-
-# 2) 실행 (원클릭)
-./macos/run_mac.sh
-# 또는 루트에서
-./run.sh
-```
-
-### 알림 테스트 (수동 호출)
-새 터미널 창을 열고 아래 명령어로 캐릭터 말풍선이 실시간 반응하는지 확인합니다:
-```bash
-# 1) 작업 착수 알림
-python notify.py --status working --title "데이터 분석 중" --msg "10만 건의 트랜잭션을 필터링하고 있습니다..." --step "1/3"
-
-# 2) 진행 갱신 알림
-python notify.py --status working --title "인공지능 모델 검증" --msg "테스트 세트 평가를 진행 중입니다..." --step "2/3"
-
-# 3) 작업 완료 알림
-python notify.py --status done --title "분석 및 모델 검증 완료!" --msg "정확도 98.4% 달성. 리포트 생성을 마쳤습니다." --elapsed 14
-
-# 4) 대기 모드 복귀
-python notify.py --status idle
-```
+1. **사전 준비**:
+   * Python 3.10 이상 설치 및 PATH 등록.
+2. **패키지 설치**:
+   ```cmd
+   pip install -r requirements.txt
+   ```
+3. **실행**:
+   * 프로젝트 루트의 `run.bat`을 더블 클릭하여 실행합니다.
+   * 또는 명령 프롬프트 / PowerShell에서 직접 실행:
+     ```cmd
+     python core\app.py
+     ```
+4. **설정창 열기**:
+   * `open_settings.bat`을 더블 클릭하거나, 바탕화면 캐릭터를 마우스 우클릭합니다.
 
 ---
 
-## macOS (MacBook) 호환 지원
+### B. macOS 환경 (MacBook Air / Pro, Mac mini, Mac Studio)
 
-맥북 사용자를 위해 [`macos/`](./macos/README.md) 전용 디렉토리를 제공하며, 다음과 같은 맥북 특화 최적화가 적용되어 있습니다:
+Apple Silicon (M1, M2, M3, M4) 및 Intel 기반 Mac을 모두 지원합니다.
 
-* **Apple Silicon M 시리즈 네이티브 지원**: M1, M2, M3, M4 칩셋 및 Intel x86_64 Mac 완벽 호환.
-* **Cocoa 투명 프레임**: macOS의 Cocoa 및 WebKit 투명도 엔진을 활용한 깔끔한 무테두리 렌더링.
-* **Spaces 및 Mission Control 연동**: 가상 데스크톱을 스와이프 전환해도 캐릭터가 항상 고정 상주(`NSWindowCollectionBehaviorCanJoinAllSpaces`).
-* **트랙패드 제스처**: 두 손가락 스크롤 줌 및 트랙패드 드래그 이동 완벽 지원.
-
-자세한 맥북 사용법은 [`macos/README.md`](./macos/README.md) 문서를 참조하십시오.
+1. **사전 준비**:
+   * Homebrew 및 Python 3.9 이상:
+     ```bash
+     brew install python
+     ```
+2. **원클릭 환경 구성 및 의존성 설치**:
+   ```bash
+   # 가상환경 .venv_mac 생성, PyObjC 및 필요 패키지 설치, 스크립트 실행 권한 부여
+   ./macos/setup_mac.sh
+   ```
+3. **실행**:
+   * 터미널에서 아래 스크립트를 실행합니다:
+     ```bash
+     ./macos/run_mac.sh
+     # 또는 루트 디렉토리에서
+     ./run.sh
+     ```
+4. **설정창 열기**:
+   ```bash
+   ./macos/open_settings_mac.sh
+   # 또는 브라우저에서 http://127.0.0.1:8765/settings 접속
+   ```
+5. **macOS 특화 기능**:
+   * Mission Control 가상 데스크톱(Spaces)을 넘겨도 캐릭터가 항상 고정 상주합니다.
+   * 트랙패드 두 손가락 스크롤로 크기 확대/축소 및 마우스 드래그 이동을 지원합니다.
 
 ---
 
-## 3대 AI CLI 지원 안내
+### C. Linux 환경 (Ubuntu, Debian, Fedora)
 
-각 CLI 에이전트가 코딩 및 작업을 진행할 때 스스로 notify.py를 호출하여 바탕화면 캐릭터 말풍선에 보고하도록 사전에 완벽히 구성되어 있습니다.
+1. **사전 준비 (WebKitGTK 및 파이썬)**:
+   ```bash
+   sudo apt update
+   sudo apt install -y python3 python3-pip python3-venv libwebkit2gtk-4.0-dev
+   ```
+2. **패키지 설치**:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+3. **실행**:
+   ```bash
+   ./run.sh
+   # 또는
+   python3 core/app.py
+   ```
 
-### 1. Antigravity CLI ([antigravity/](./antigravity/README.md))
-* `antigravity/install_skill.bat`을 실행하면 `%USERPROFILE%\.gemini\config\skills\avatar-hud\SKILL.md`로 자동 설치됩니다.
-* Antigravity 세션에서 에이전트가 도구 착수/진행/완료 시 스스로 말풍선을 업데이트합니다.
+---
 
-### 2. Codex CLI ([codex/](./codex/README.md))
-* `codex/AGENTS.md` 지침을 복사하여 사용자의 Codex 작업 환경에 배치합니다.
-* Codex 에이전트가 단계별 실행 전후로 `codex/notify_codex.py`를 호출합니다.
+## 2. 사용하는 AI CLI별 상세 셋업 가이드
 
-### 3. Claude CLI / Claude Code ([claude/](./claude/README.md))
-* 작업 대상 프로젝트 루트에 `claude/CLAUDE.md`를 위치시킵니다.
-* Claude Code 에이전트가 시작, 중간 빌드/테스트, 최종 완료 시점에 스스로 `claude/notify_claude.py`를 호출합니다.
+각 CLI 에이전트가 코딩 및 작업을 진행할 때 스스로 notify 도구를 호출하여 바탕화면 캐릭터 말풍선에 보고하도록 사전에 완벽히 구성되어 있습니다.
+
+---
+
+### A. Antigravity CLI (Google DeepMind)
+
+Antigravity CLI 에이전트가 작업 착수 시점, 중간 단계, 최종 완료 시점에 스스로 말풍선을 업데이트하도록 스킬을 등록합니다.
+
+1. **스킬 등록**:
+   * **Windows**:
+     `antigravity\install_skill.bat`을 실행합니다. (자동으로 `%USERPROFILE%\.gemini\config\skills\avatar-hud\SKILL.md`로 복사 및 등록)
+   * **macOS / Linux**:
+     ```bash
+     mkdir -p ~/.gemini/config/skills/avatar-hud
+     cp antigravity/skills/avatar-hud/SKILL.md ~/.gemini/config/skills/avatar-hud/SKILL.md
+     ```
+2. **작동 방식**:
+   * 사용자가 Antigravity CLI에서 작업 지시 시 에이전트가 자동으로 스킬을 읽고 도구 실행 전후 `core/notify.py`를 호출하여 말풍선에 실시간 보고합니다.
+3. **수동 호출 테스트**:
+   ```bash
+   python core/notify.py --status working --title "Antigravity 분석 중" --msg "코드베이스 전수 검사 진행 중..." --step "1/3"
+   python core/notify.py --status done --title "Antigravity 완료!" --msg "모든 작업이 성공적으로 끝났습니다."
+   ```
+
+---
+
+### B. Codex CLI (OpenAI Codex)
+
+Codex CLI 에이전트가 코드 작업 시 말풍선에 진행 상황을 보고하도록 시스템 프롬프트 지침을 연동합니다.
+
+1. **지침 파일 연동**:
+   * `codex/AGENTS.md` 파일을 작업 대상 프로젝트 루트로 복사합니다:
+     ```bash
+     # Windows
+     copy codex\AGENTS.md <your_project_dir>\AGENTS.md
+
+     # macOS / Linux
+     cp codex/AGENTS.md <your_project_dir>/AGENTS.md
+     ```
+   * 또는 사용자의 글로벌 Codex 프롬프트 지침에 `codex/AGENTS.md` 내용을 추가합니다.
+2. **작동 방식**:
+   * Codex CLI 에이전트가 작업을 수행하기 전과 후, 오류 발생 시 `codex/notify_codex.py`를 호출합니다.
+3. **수동 호출 테스트**:
+   ```bash
+   python codex/notify_codex.py --status working --title "Codex 분석 중" --msg "코드 구조 분석을 시작합니다." --step "1/2"
+   python codex/notify_codex.py --status done --title "Codex 완료" --msg "요청된 코드 구현을 마쳤습니다."
+   ```
+
+---
+
+### C. Claude CLI / Claude Code (Anthropic)
+
+Anthropic의 Claude Code CLI 에이전트가 시작, 빌드/테스트, 최종 완료 시점에 스스로 말풍선을 업데이트하도록 프로젝트 규칙을 연동합니다.
+
+1. **프로젝트 규칙(CLAUDE.md) 연동**:
+   * `claude/CLAUDE.md` 파일을 작업 대상 프로젝트 루트로 복사합니다:
+     ```bash
+     # Windows
+     copy claude\CLAUDE.md <your_project_dir>\CLAUDE.md
+
+     # macOS / Linux
+     cp claude/CLAUDE.md <your_project_dir>/CLAUDE.md
+     ```
+2. **작동 방식**:
+   * Claude Code가 프로젝트 디렉토리를 열 때 `CLAUDE.md`를 자동으로 로드하여, 주요 명령어 실행 전후 `claude/notify_claude.py`를 호출합니다.
+3. **수동 호출 테스트**:
+   ```bash
+   python claude/notify_claude.py --status working --title "Claude 작업 중" --msg "버그 픽스 및 리팩토링 진행 중..." --step "1/3"
+   python claude/notify_claude.py --status done --title "Claude 완료!" --msg "코드 리팩토링 및 테스트가 성공했습니다."
+   ```
 
 ---
 
