@@ -339,8 +339,8 @@
     <div class="drop-zone" id="drop-zone">
       <div class="drop-icon">[FILE]</div>
       <div class="drop-text">클릭하여 이미지 파일 선택 또는 여기에 드래그 앤 드롭</div>
-      <div class="drop-sub">배경이 투명한 PNG, WebP, GIF 파일 지원 (권장: 세로형 스탠딩)</div>
-      <input type="file" id="file-input" accept="image/png,image/webp,image/gif" style="display: none;">
+      <div class="drop-sub">PNG, WebP, JPG, JPEG, GIF, BMP, SVG, AVIF, TIFF, ICO 등 모든 이미지 포맷 지원 (권장: 누끼 투명 세로형 스탠딩)</div>
+      <input type="file" id="file-input" accept="image/*,.png,.webp,.jpg,.jpeg,.gif,.bmp,.svg,.avif,.tiff,.tif,.ico" style="display: none;">
     </div>
 
     <div class="preview-container">
@@ -464,8 +464,9 @@
     });
 
     function handleFile(file) {
-      if (!file.type.startsWith('image/')) {
-        alert('이미지 파일(PNG, WebP 등)만 선택할 수 있습니다.');
+      const isImage = file.type.startsWith('image/') || /\.(png|webp|jpe?g|gif|bmp|svg|avif|tiff?|ico)$/i.test(file.name);
+      if (!isImage) {
+        alert('이미지 파일(PNG, WebP, JPEG, GIF, BMP, SVG, AVIF, TIFF, ICO 등)만 선택할 수 있습니다.');
         return;
       }
 

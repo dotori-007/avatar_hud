@@ -28,7 +28,7 @@ html, body {
    ========================================================================== */
 #speech-bubble {
   position: absolute;
-  top: 14px;
+  bottom: 490px;
   left: 14px;
   right: 14px;
   max-width: calc(100% - 28px);
@@ -43,7 +43,8 @@ html, body {
   opacity: 0;
   transform: scale(0.88) translateY(-6px);
   transition: opacity 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-              transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              bottom 0.18s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 30;
   cursor: default;
 }

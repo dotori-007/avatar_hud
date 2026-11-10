@@ -13,26 +13,32 @@
 
 1. **오로지 투명 누끼 스탠딩 모드 전용 (Transparent Cutout Standing Only)**:
    - 불필요한 사각 박스나 불투명 프레임을 배제하고, 배경이 투명한 인물/캐릭터 스탠딩 일러스트만 바탕화면에 자연스럽게 렌더링됩니다.
-2. **크로스 플랫폼 지원 (Windows, macOS MacBook, Linux)**:
+2. **폭넓은 이미지 포맷 완벽 지원 (PNG, WebP, JPG, GIF, BMP, SVG, AVIF, TIFF, ICO)**:
+   - PNG뿐만 아니라 WebP, JPG, JPEG, GIF, BMP, SVG, AVIF, TIFF, ICO 등 모든 주요 그래픽 포맷을 지원합니다.
+   - 드래그 앤 드롭 및 파일 탐색기 선택 모두 지원합니다.
+3. **다이내믹 말풍선 정수리 앵커링 (Dynamic Speech Bubble Anchoring)**:
+   - 마우스 휠 스크롤이나 설정창 슬라이더로 캐릭터 크기(0.5x ~ 2.0x)를 조절할 때, 말풍선이 캐릭터 상단 모서리를 실시간으로 추적하여 항상 머리 바로 위에 밀착 배치됩니다.
+   - 축소 시 말풍선이 따라 내려와 불필요한 여백이 생기지 않으며, 확대 시에도 캐릭터와 겹치지 않고 화면 상단 범위 내에서 안정적으로 유지됩니다.
+4. **크로스 플랫폼 지원 (Windows, macOS MacBook, Linux)**:
    - 윈도우 데스크톱 및 Apple Silicon(M1/M2/M3/M4) / Intel MacBook, Linux 환경 지원.
    - macOS Cocoa WKWebView 기반 투명 프레임 및 Mission Control 가상 데스크톱(Spaces) 상주 지원.
-3. **상시 스탠딩 상주 (Persistent Desktop Companion)**:
+5. **상시 스탠딩 상주 (Persistent Desktop Companion)**:
    - 화면에서 숨거나 사라지지 않고 항상 바탕화면(원하는 위치)에 상주합니다.
    - 캐릭터를 마우스/트랙패드로 자유롭게 드래그하여 원하는 위치로 옮길 수 있으며, 휠 스크롤로 크기를 자유롭게 확대/축소할 수 있습니다.
-4. **만화풍 순백색 다이내믹 말풍선 (Clean Pure White Speech Bubble)**:
+6. **만화풍 순백색 다이내믹 말풍선 (Clean Pure White Speech Bubble)**:
    - antiy-zunda 시그니처 순백색 카드 UI와 바운스 인 애니메이션 완벽 구현.
    - **작업 중 (Working)**: 블루 소프트 칩 + 단계(Step) 배지 + 부드러운 상태 표시.
    - **작업 완료 (Done)**: 경쾌한 바운스 효과 + 에메랄드 그린 완료 배지 + 소요 시간 태그 및 결과 요약.
    - **오류 발생 (Error)**: 레드 경고 배지 + 예외 상황 요약.
    - **대기 상태 (Idle)**: 화면을 가리지 않는 미니멀 순백색 말풍선.
-5. **전용 그래픽 환경설정창 (Settings Window)**:
+7. **전용 그래픽 환경설정창 (Settings Window)**:
    - 탐색기 및 Finder에서 투명 누끼 이미지를 끌어다 놓기만 하면 즉시 반영되는 드래그 앤 드롭 업로더.
    - 투명도 확인을 위한 실시간 체커보드 프리뷰.
    - 캐릭터 크기 배율(Scale) 슬라이더 (50% ~ 200%).
    - 말풍선 상태별 실시간 발화 테스트 기능.
-6. **3대 메이저 AI CLI 완벽 지원**:
+8. **3대 메이저 AI CLI 완벽 지원**:
    - Antigravity CLI, Codex CLI, Claude CLI (Claude Code) 전용 연동 디렉토리 및 규칙 파일 완비.
-7. **클린 UI 표준**:
+9. **클린 UI 표준**:
    - 프로젝트 전체 소스코드, UI, 문서에서 이모티콘을 배제한 깔끔하고 신뢰도 높은 디자인.
 
 ---

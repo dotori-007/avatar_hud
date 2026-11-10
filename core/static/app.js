@@ -17,12 +17,41 @@
   let currentScale = 1.0;
   let autoHideTimer = null;
 
+  // Dynamic Speech Bubble Positioning
+  // Places the speech bubble directly above the top edge of the avatar character
+  function updateBubblePosition() {
+    if (!avatarImg || !speechBubble) return;
+    const rect = avatarImg.getBoundingClientRect();
+    if (!rect || rect.height === 0) return;
+
+    // Distance from the bottom of viewport to the top edge of avatar image
+    const avatarTopFromBottom = window.innerHeight - rect.top;
+    const bubbleHeight = speechBubble.offsetHeight || 80;
+    
+    // Clamp so bubble never overflows outside the top or bottom of the window
+    const maxBottom = window.innerHeight - bubbleHeight - 12;
+    const minBottom = 16;
+    const targetBottom = Math.max(minBottom, Math.min(avatarTopFromBottom + 6, maxBottom));
+
+    speechBubble.style.top = 'auto';
+    speechBubble.style.bottom = `${Math.round(targetBottom)}px`;
+  }
+
   // 1. Scale Avatar
   function setScale(scale) {
     currentScale = Math.min(2.0, Math.max(0.5, scale));
     avatarImg.style.transform = `scale(${currentScale})`;
     avatarImg.style.transformOrigin = 'bottom center';
+    requestAnimationFrame(updateBubblePosition);
   }
+
+  avatarImg.addEventListener('load', () => {
+    requestAnimationFrame(updateBubblePosition);
+  });
+
+  window.addEventListener('resize', () => {
+    requestAnimationFrame(updateBubblePosition);
+  });
 
   btnScaleUp.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -68,6 +97,12 @@
   avatarFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    const isImage = file.type.startsWith('image/') || /\.(png|webp|jpe?g|gif|bmp|svg|avif|tiff?|ico)$/i.test(file.name);
+    if (!isImage) {
+      alert('이미지 파일(PNG, WebP, JPEG, GIF, BMP, SVG, AVIF, TIFF, ICO 등)만 선택할 수 있습니다.');
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -137,6 +172,9 @@
     speechBubble.classList.remove('show');
     void speechBubble.offsetWidth; // Force reflow
     speechBubble.classList.add('show');
+
+    // Recalculate speech bubble position to sit directly above avatar head
+    requestAnimationFrame(updateBubblePosition);
   }
 
   // 5. Real-time Server-Sent Events (SSE) Connection
