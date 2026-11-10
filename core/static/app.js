@@ -8,13 +8,13 @@
   const stepBadge = document.getElementById('step-badge');
   const elapsedTime = document.getElementById('elapsed-time');
   const bubbleText = document.getElementById('bubble-text');
+  const btnSettings = document.getElementById('btn-settings');
   const btnChangeAvatar = document.getElementById('btn-change-avatar');
   const btnScaleUp = document.getElementById('btn-scale-up');
   const btnScaleDown = document.getElementById('btn-scale-down');
   const avatarFileInput = document.getElementById('avatar-file-input');
 
   let currentScale = 1.0;
-  let typingTimer = null;
   let autoHideTimer = null;
 
   // 1. Scale Avatar
@@ -41,7 +41,25 @@
     setScale(currentScale + delta);
   }, { passive: false });
 
-  // 2. Change Avatar File
+  // 2. Open Settings Window
+  function openSettings() {
+    fetch('/api/open_settings', { method: 'POST' }).catch(console.warn);
+  }
+
+  if (btnSettings) {
+    btnSettings.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSettings();
+    });
+  }
+
+  // Right-click on character opens settings
+  avatarWrapper.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    openSettings();
+  });
+
+  // 3. Quick Change Avatar File from hover camera icon
   btnChangeAvatar.addEventListener('click', (e) => {
     e.stopPropagation();
     avatarFileInput.click();
@@ -56,17 +74,20 @@
       const dataUrl = event.target.result;
       avatarImg.src = dataUrl;
 
-      // Save to server
+      // Save to server config and notify all
       fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ avatar_data: dataUrl })
+        body: JSON.stringify({
+          avatar_image: dataUrl,
+          avatar_name: file.name
+        })
       }).catch(console.warn);
     };
     reader.readAsDataURL(file);
   });
 
-  // 3. Update Status UI
+  // 4. Update Status UI
   function updateStatus(data) {
     const status = data.status || 'idle';
     const title = data.title || (status === 'working' ? '작업 수행 중...' : status === 'done' ? '작업 완료!' : '대기 중');
@@ -112,21 +133,13 @@
 
     bubbleText.textContent = displayText;
 
-    // Reset bounce animation on show
+    // Trigger bounce animation
     speechBubble.classList.remove('show');
     void speechBubble.offsetWidth; // Force reflow
     speechBubble.classList.add('show');
-
-    // Auto-dim idle after timeout if needed
-    clearTimeout(autoHideTimer);
-    if (status === 'idle') {
-      autoHideTimer = setTimeout(() => {
-        // Keep visible with gentle opacity or keep shown
-      }, 10000);
-    }
   }
 
-  // 4. Real-time Server-Sent Events (SSE) Connection
+  // 5. Real-time Server-Sent Events (SSE) Connection
   function connectSSE() {
     const eventSource = new EventSource('/api/stream');
 
@@ -137,6 +150,18 @@
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        
+        // Handle real-time config updates (e.g. from settings window)
+        if (data.type === 'config' && data.config) {
+          if (data.config.avatar_image) {
+            avatarImg.src = data.config.avatar_image;
+          }
+          if (data.config.scale != null) {
+            setScale(data.config.scale);
+          }
+          return;
+        }
+
         updateStatus(data);
       } catch (err) {
         console.error('[AvatarHUD] Failed to parse SSE message:', err);
@@ -163,7 +188,7 @@
   fetch('/api/config')
     .then(res => res.json())
     .then(config => {
-      if (config.avatar_image && config.avatar_image !== 'default_avatar.png') {
+      if (config.avatar_image) {
         avatarImg.src = config.avatar_image;
       }
       if (config.scale) {

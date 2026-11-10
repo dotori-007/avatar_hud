@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚙️ AvatarHUD 설정</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: rgba(255, 255, 255, 0.1);
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-sub: #94a3b8;
+      --checkerboard: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    /* Scrollbar */
+    body::-webkit-scrollbar {
+      width: 6px;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #93c5fd;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Upload & Drag Drop Zone */
+    .drop-zone {
+      border: 2px dashed rgba(59, 130, 246, 0.4);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.6);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 12px;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--primary);
+      background: rgba(30, 58, 138, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .drop-icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .drop-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .drop-sub {
+      font-size: 10px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* Preview Area with Transparency Checkerboard */
+    .preview-container {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--card-border);
+    }
+
+    .checkerboard-box {
+      width: 80px;
+      height: 110px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1e293b;
+      background-image: linear-gradient(45deg, var(--checkerboard) 25%, transparent 25%),
+                        linear-gradient(-45deg, var(--checkerboard) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, var(--checkerboard) 75%),
+                        linear-gradient(-45deg, transparent 75%, var(--checkerboard) 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
+    }
+
+    .checkerboard-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .preview-info {
+      flex: 1;
+    }
+
+    .info-filename {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    .info-size {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .btn-reset-avatar {
+      margin-top: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-reset-avatar:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* Sliders & Controls */
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .slider-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      margin-left: 14px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .scale-val {
+      font-size: 12px;
+      font-weight: 700;
+      width: 40px;
+      text-align: right;
+      color: #38bdf8;
+    }
+
+    /* Quick Test Buttons */
+    .test-btn-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .test-btn {
+      flex: 1;
+      padding: 6px 4px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .btn-working {
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .btn-working:hover {
+      background: rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-done {
+      background: rgba(5, 150, 105, 0.2);
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+    .btn-done:hover {
+      background: rgba(5, 150, 105, 0.4);
+    }
+
+    .btn-idle {
+      background: rgba(148, 163, 184, 0.15);
+      color: #cbd5e1;
+      border-color: rgba(203, 213, 225, 0.3);
+    }
+    .btn-idle:hover {
+      background: rgba(148, 163, 184, 0.3);
+    }
+
+    /* Message Input */
+    .input-box {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px 10px;
+      font-size: 12px;
+      margin-top: 6px;
+      outline: none;
+    }
+    .input-box:focus {
+      border-color: var(--primary);
+    }
+
+    /* Bottom Action Bar */
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn-main {
+      flex: 1;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .btn-main:hover {
+      background: var(--primary-hover);
+    }
+
+    .toast-popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #10b981;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 999;
+    }
+    .toast-popup.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>⚙️ AvatarHUD 설정</h1>
+      <div class="subtitle">투명 누끼 스탠딩 이미지 및 말풍선 관리자</div>
+    </div>
+  </header>
+
+  <!-- 1. Avatar Image Card -->
+  <div class="card">
+    <div class="card-title">👤 캐릭터 스탠딩 이미지 (누끼 PNG)</div>
+
+    <div class="drop-zone" id="drop-zone">
+      <div class="drop-icon">📁</div>
+      <div class="drop-text">클릭하여 이미지 파일 선택 또는 여기에 드래그 앤 드롭</div>
+      <div class="drop-sub">배경이 투명한 PNG, WebP, GIF 파일 지원 (권장: 세로형 스탠딩)</div>
+      <input type="file" id="file-input" accept="image/png,image/webp,image/gif" style="display: none;">
+    </div>
+
+    <div class="preview-container">
+      <div class="checkerboard-box">
+        <img id="preview-img" src="/static/default_avatar.png" alt="Preview">
+      </div>
+      <div class="preview-info">
+        <div class="info-filename" id="info-filename">default_avatar.png</div>
+        <div class="info-size" id="info-size">현재 적용 중인 캐릭터</div>
+        <button class="btn-reset-avatar" id="btn-reset">기본 즌다몬으로 초기화</button>
+      </div>
+    </div>
+
+    <div class="control-row">
+      <span>캐릭터 크기 배율 (Scale)</span>
+      <div class="slider-box">
+        <input type="range" id="scale-slider" min="0.5" max="2.0" step="0.05" value="1.0">
+        <span class="scale-val" id="scale-val">1.0x</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Speech Bubble Test Card -->
+  <div class="card">
+    <div class="card-title">💬 말풍선 테스트 & 즉시 발화</div>
+    <input type="text" id="test-msg-input" class="input-box" placeholder="말풍선에 띄울 테스트 문구를 입력하세요..." value="AvatarHUD 설정이 성공적으로 적용되었습니다!">
+    
+    <div class="test-btn-group">
+      <button class="test-btn btn-working" id="btn-test-working">🔄 작업 중 테스트</button>
+      <button class="test-btn btn-done" id="btn-test-done">✅ 완료 테스트</button>
+      <button class="test-btn btn-idle" id="btn-test-idle">💤 대기 복귀</button>
+    </div>
+  </div>
+
+  <!-- 3. Actions -->
+  <div class="actions">
+    <button class="btn-main" id="btn-save">저장 및 즉시 적용</button>
+  </div>
+
+  <div class="toast-popup" id="toast">적용 완료!</div>
+
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const previewImg = document.getElementById('preview-img');
+    const infoFilename = document.getElementById('info-filename');
+    const infoSize = document.getElementById('info-size');
+    const scaleSlider = document.getElementById('scale-slider');
+    const scaleVal = document.getElementById('scale-val');
+    const btnReset = document.getElementById('btn-reset');
+    const testMsgInput = document.getElementById('test-msg-input');
+    const btnTestWorking = document.getElementById('btn-test-working');
+    const btnTestDone = document.getElementById('btn-test-done');
+    const btnTestIdle = document.getElementById('btn-test-idle');
+    const btnSave = document.getElementById('btn-save');
+    const toast = document.getElementById('toast');
+
+    let currentAvatarData = null;
+    let currentConfig = {};
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // Load initial config
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(cfg => {
+        currentConfig = cfg;
+        if (cfg.scale) {
+          scaleSlider.value = cfg.scale;
+          scaleVal.textContent = `${cfg.scale}x`;
+        }
+        if (cfg.avatar_image) {
+          previewImg.src = cfg.avatar_image;
+          infoFilename.textContent = cfg.avatar_image.startsWith('data:') ? '사용자 정의 커스텀 이미지' : cfg.avatar_image;
+        }
+      });
+
+    // Scale slider input
+    scaleSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value).toFixed(2);
+      scaleVal.textContent = `${val}x`;
+      // Preview live scale via POST
+      fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scale: parseFloat(val) })
+      }).catch(()=>{});
+    });
+
+    // Drop zone click
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop events
+    ['dragenter', 'dragover'].forEach(name => {
+      dropZone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropZone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일(PNG, WebP 등)만 선택할 수 있습니다.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentAvatarData = event.target.result;
+        previewImg.src = currentAvatarData;
+        infoFilename.textContent = file.name;
+        infoSize.textContent = `${(file.size / 1024).toFixed(1)} KB (선택됨)`;
+
+        // Automatically sync to live HUD immediately
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            avatar_image: currentAvatarData,
+            avatar_name: file.name
+          })
+        }).then(() => {
+          showToast('새 이미지가 바탕화면에 적용되었습니다!');
+        }).catch(console.warn);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Reset to default
+    btnReset.addEventListener('click', () => {
+      currentAvatarData = '/static/default_avatar.png';
+      previewImg.src = currentAvatarData;
+      infoFilename.textContent = 'default_avatar.png';
+      infoSize.textContent = '기본 즌다몬 스탠딩';
+
+      fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          avatar_image: '/static/default_avatar.png',
+          avatar_name: 'default_avatar.png'
+        })
+      }).then(() => {
+        showToast('기본 이미지로 초기화되었습니다.');
+      });
+    });
+
+    // Test Buttons
+    btnTestWorking.addEventListener('click', () => {
+      const msg = testMsgInput.value || '코드 작성 및 테스트 실행 중...';
+      fetch('/api/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'working',
+          title: '작업 수행 중',
+          message: msg,
+          step: '1/3'
+        })
+      }).then(() => showToast('작업 중 말풍선 전송 완료!'));
+    });
+
+    btnTestDone.addEventListener('click', () => {
+      const msg = testMsgInput.value || '모든 작업이 성공적으로 완료되었습니다.';
+      fetch('/api/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'done',
+          title: '작업 완료!',
+          message: msg,
+          elapsed: 5
+        })
+      }).then(() => showToast('완료 말풍선 전송 완료!'));
+    });
+
+    btnTestIdle.addEventListener('click', () => {
+      fetch('/api/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'idle',
+          title: '대기 중',
+          message: '명령을 기다리고 있습니다.'
+        })
+      }).then(() => showToast('대기 모드로 복귀했습니다.'));
+    });
+
+    // Save Button
+    btnSave.addEventListener('click', () => {
+      const scale = parseFloat(scaleSlider.value);
+      const payload = { scale };
+      if (currentAvatarData) {
+        payload.avatar_image = currentAvatarData;
+      }
+      fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        showToast('모든 설정이 저장되었습니다!');
+      });
+    });
+  </script>
+</body>
+</html>

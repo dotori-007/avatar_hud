@@ -12,6 +12,7 @@ import time
 import queue
 import threading
 import argparse
+import webbrowser
 from bottle import Bottle, request, response, static_file, abort
 
 # Set UTF-8 encoding
@@ -37,8 +38,8 @@ def load_config():
         "port": 8765,
         "avatar_image": "default_avatar.png",
         "scale": 1.0,
-        "window_width": 640,
-        "window_height": 720,
+        "window_width": 420,
+        "window_height": 620,
         "always_on_top": True,
         "auto_idle_seconds": 30
     }
@@ -57,6 +58,7 @@ current_status = {
 
 sse_subscribers = []
 sse_lock = threading.Lock()
+settings_window = None
 
 # Bottle Application
 app = Bottle()
@@ -70,6 +72,10 @@ def enable_cors():
 @app.route('/', method=['GET', 'OPTIONS'])
 def index():
     return static_file('index.html', root=STATIC_DIR)
+
+@app.route('/settings', method=['GET', 'OPTIONS'])
+def settings_page():
+    return static_file('settings.html', root=STATIC_DIR)
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
@@ -156,7 +162,6 @@ def sse_stream():
                 msg = client_queue.get(timeout=20)
                 yield f"data: {msg}\n\n"
             except queue.Empty:
-                # Keep-alive heartbeat comment
                 yield ": keep-alive\n\n"
     except GeneratorExit:
         pass
@@ -177,11 +182,56 @@ def handle_config():
             config.update(req_data)
             with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
                 json.dump(config, f, indent=2, ensure_ascii=False)
+
+            # Broadcast config update to all connected SSE clients (e.g. main HUD window)
+            payload = json.dumps({"type": "config", "config": config}, ensure_ascii=False)
+            with sse_lock:
+                for q in sse_subscribers:
+                    try:
+                        q.put_nowait(payload)
+                    except Exception:
+                        pass
         except Exception as e:
             abort(400, f"Failed to save config: {e}")
 
     response.content_type = 'application/json; charset=utf-8'
     return json.dumps(config, ensure_ascii=False)
+
+@app.route('/api/open_settings', method=['GET', 'POST', 'OPTIONS'])
+def open_settings_endpoint():
+    if request.method == 'OPTIONS':
+        return {}
+    
+    host = config.get('host', '127.0.0.1')
+    port = config.get('port', 8765)
+    open_settings_window(host, port)
+    return {"result": "success"}
+
+
+def open_settings_window(host, port):
+    global settings_window
+    url = f"http://{host}:{port}/settings"
+    try:
+        import webview
+        if settings_window is not None:
+            try:
+                settings_window.destroy()
+            except Exception:
+                pass
+            settings_window = None
+
+        settings_window = webview.create_window(
+            title='⚙️ AvatarHUD 설정',
+            url=url,
+            width=520,
+            height=680,
+            resizable=True
+        )
+        return True
+    except Exception as e:
+        print(f"[AvatarHUD] Opening settings in web browser fallback: {e}")
+        webbrowser.open(url)
+        return True
 
 
 def run_server(host, port):
@@ -195,6 +245,7 @@ def run_server(host, port):
 def main():
     parser = argparse.ArgumentParser(description="AvatarHUD Transparent Standing Desktop Companion")
     parser.add_argument('--server-only', action='store_true', help="Run server only without opening GUI window")
+    parser.add_argument('--settings', action='store_true', help="Open settings window directly")
     parser.add_argument('--port', type=int, default=config.get('port', 8765), help="Server port (default: 8765)")
     parser.add_argument('--host', type=str, default=config.get('host', '127.0.0.1'), help="Server host (default: 127.0.0.1)")
     args = parser.parse_args()
@@ -216,6 +267,15 @@ def main():
             print("\n[AvatarHUD] Server stopped.")
             sys.exit(0)
 
+    if args.settings:
+        print("[AvatarHUD] Opening settings...")
+        open_settings_window(host, port)
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            sys.exit(0)
+
     # Launch Transparent pywebview Window
     try:
         import webview
@@ -224,8 +284,8 @@ def main():
         sys.exit(1)
 
     url = f"http://{host}:{port}"
-    width = config.get('window_width', 640)
-    height = config.get('window_height', 720)
+    width = config.get('window_width', 420)
+    height = config.get('window_height', 620)
     on_top = config.get('always_on_top', True)
 
     print(f"[AvatarHUD] Launching transparent window ({width}x{height}, on_top={on_top})...")
