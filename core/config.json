@@ -3,9 +3,8 @@
   "port": 8765,
   "avatar_image": "default_avatar.png",
   "scale": 1.0,
-  "window_width": 640,
-  "window_height": 720,
+  "window_width": 420,
+  "window_height": 620,
   "always_on_top": true,
-  "bubble_side": "right",
   "auto_idle_seconds": 30
 }

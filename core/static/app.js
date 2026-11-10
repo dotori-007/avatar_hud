@@ -6,23 +6,20 @@
   const statusBadge = document.getElementById('status-badge');
   const statusText = document.getElementById('status-text');
   const stepBadge = document.getElementById('step-badge');
-  const bubbleTitle = document.getElementById('bubble-title');
-  const bubbleMessage = document.getElementById('bubble-message');
   const elapsedTime = document.getElementById('elapsed-time');
-  const timestamp = document.getElementById('timestamp');
-  const btnMinimize = document.getElementById('btn-minimize-bubble');
+  const bubbleText = document.getElementById('bubble-text');
   const btnChangeAvatar = document.getElementById('btn-change-avatar');
   const btnScaleUp = document.getElementById('btn-scale-up');
   const btnScaleDown = document.getElementById('btn-scale-down');
   const avatarFileInput = document.getElementById('avatar-file-input');
 
   let currentScale = 1.0;
-  let isMinimized = false;
   let typingTimer = null;
+  let autoHideTimer = null;
 
   // 1. Scale Avatar
   function setScale(scale) {
-    currentScale = Math.min(2.5, Math.max(0.4, scale));
+    currentScale = Math.min(2.0, Math.max(0.5, scale));
     avatarImg.style.transform = `scale(${currentScale})`;
     avatarImg.style.transformOrigin = 'bottom center';
   }
@@ -69,65 +66,18 @@
     reader.readAsDataURL(file);
   });
 
-  // 3. Minimize / Restore Bubble
-  btnMinimize.addEventListener('click', (e) => {
-    e.stopPropagation();
-    isMinimized = !isMinimized;
-    if (isMinimized) {
-      speechBubble.classList.add('minimized');
-      btnMinimize.textContent = '+';
-    } else {
-      speechBubble.classList.remove('minimized');
-      btnMinimize.textContent = '✕';
-    }
-  });
-
-  // Clicking a minimized bubble expands it
-  speechBubble.addEventListener('click', () => {
-    if (isMinimized) {
-      isMinimized = false;
-      speechBubble.classList.remove('minimized');
-      btnMinimize.textContent = '✕';
-    }
-  });
-
-  // 4. Typing Effect for Message
-  function typeMessage(text, element) {
-    clearTimeout(typingTimer);
-    element.textContent = '';
-    let index = 0;
-    const speed = Math.max(8, Math.min(25, 400 / (text.length || 1)));
-
-    function step() {
-      if (index < text.length) {
-        element.textContent += text.charAt(index);
-        index++;
-        typingTimer = setTimeout(step, speed);
-      }
-    }
-    step();
-  }
-
-  // 5. Update Status UI
+  // 3. Update Status UI
   function updateStatus(data) {
     const status = data.status || 'idle';
     const title = data.title || (status === 'working' ? '작업 수행 중...' : status === 'done' ? '작업 완료!' : '대기 중');
     const message = data.message || '';
     const step = data.step || '';
-    const elapsed = data.elapsed != null ? `${data.elapsed}초 소요` : '';
+    const elapsed = data.elapsed != null ? `${data.elapsed}초` : '';
 
-    // Class update
-    speechBubble.classList.remove('status-working', 'status-done', 'status-error', 'status-idle');
-    speechBubble.classList.add(`status-${status}`);
+    // Class update for status
+    speechBubble.className = `speech-bubble show status-${status}`;
 
-    // If minimized and important event happens, restore
-    if (isMinimized && (status === 'working' || status === 'done' || status === 'error')) {
-      isMinimized = false;
-      speechBubble.classList.remove('minimized');
-      btnMinimize.textContent = '✕';
-    }
-
-    // Status text & indicator
+    // Status map
     const statusMap = {
       working: '작업 중',
       done: '완료됨',
@@ -144,17 +94,39 @@
       stepBadge.style.display = 'none';
     }
 
-    // Title & Message
-    bubbleTitle.textContent = title;
-    typeMessage(message, bubbleMessage);
+    // Elapsed badge
+    if (elapsed) {
+      elapsedTime.style.display = 'inline-block';
+      elapsedTime.textContent = elapsed;
+    } else {
+      elapsedTime.style.display = 'none';
+    }
 
-    // Footer
-    elapsedTime.textContent = elapsed;
-    const now = new Date();
-    timestamp.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    // Compose text
+    let displayText = '';
+    if (title && message) {
+      displayText = `${title}\n${message}`;
+    } else {
+      displayText = title || message || 'AvatarHUD 준비 완료!';
+    }
+
+    bubbleText.textContent = displayText;
+
+    // Reset bounce animation on show
+    speechBubble.classList.remove('show');
+    void speechBubble.offsetWidth; // Force reflow
+    speechBubble.classList.add('show');
+
+    // Auto-dim idle after timeout if needed
+    clearTimeout(autoHideTimer);
+    if (status === 'idle') {
+      autoHideTimer = setTimeout(() => {
+        // Keep visible with gentle opacity or keep shown
+      }, 10000);
+    }
   }
 
-  // 6. Real-time Server-Sent Events (SSE) Connection
+  // 4. Real-time Server-Sent Events (SSE) Connection
   function connectSSE() {
     const eventSource = new EventSource('/api/stream');
 
