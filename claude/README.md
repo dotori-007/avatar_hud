@@ -4,11 +4,11 @@ Anthropic의 Claude Code CLI 에이전트가 코딩 작업을 진행할 때, 바
 
 ---
 
-## 📌 설정 및 사용법
+## 설정 및 사용법
 
-1. **`CLAUDE.md` 규칙 파일 연동**:
-   * 본 디렉토리에 포함된 `CLAUDE.md`는 Claude Code가 실행 시 자동으로 읽어들이는 시스템 규칙 파일입니다.
-   * 작업하고자 하는 프로젝트 루트에 `CLAUDE.md`를 위치시키면 Claude Code가 스스로 AvatarHUD 알림을 전송합니다.
+1. **CLAUDE.md 규칙 파일 연동**:
+   * 본 디렉토리에 포함된 CLAUDE.md는 Claude Code가 실행 시 자동으로 읽어들이는 시스템 규칙 파일입니다.
+   * 작업하고자 하는 프로젝트 루트에 CLAUDE.md를 위치시키면 Claude Code가 스스로 AvatarHUD 알림을 전송합니다.
 2. **도구 수동 호출 예시**:
    ```bash
    # 작업 중 알림

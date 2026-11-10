@@ -4,7 +4,7 @@ Antigravity CLI 에이전트가 작업할 때, 바탕화면 투명 누끼 캐릭
 
 ---
 
-## ⚡ 빠른 시작 (원클릭 설치)
+## 빠른 시작 (원클릭 설치)
 
 1. `antigravity/install_skill.bat`을 실행합니다.
 2. `%USERPROFILE%\.gemini\config\skills\avatar-hud\SKILL.md` 경로로 자동 복사 및 등록됩니다.
@@ -12,7 +12,7 @@ Antigravity CLI 에이전트가 작업할 때, 바탕화면 투명 누끼 캐릭
 
 ---
 
-## 🛠️ 수동 호출 명령어 예시
+## 수동 호출 명령어 예시
 
 ```powershell
 # 1. 작업 시작 알림

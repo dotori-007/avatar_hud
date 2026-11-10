@@ -221,7 +221,7 @@ def open_settings_window(host, port):
             settings_window = None
 
         settings_window = webview.create_window(
-            title='⚙️ AvatarHUD 설정',
+            title='AvatarHUD 설정',
             url=url,
             width=520,
             height=680,

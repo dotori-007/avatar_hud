@@ -215,13 +215,14 @@ html, body {
 }
 
 .avatar-controls button {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 32px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   background: rgba(255, 255, 255, 0.95);
   color: #1f2937;
-  font-size: 12px;
+  font-size: 10px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;

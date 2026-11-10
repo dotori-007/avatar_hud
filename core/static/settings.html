@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚙️ AvatarHUD 설정</title>
+  <title>AvatarHUD 설정</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -34,7 +34,6 @@
       overflow-y: auto;
     }
 
-    /* Scrollbar */
     body::-webkit-scrollbar {
       width: 6px;
     }
@@ -66,7 +65,6 @@
       color: var(--text-sub);
     }
 
-    /* Section Cards */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -86,7 +84,6 @@
       gap: 6px;
     }
 
-    /* Upload & Drag Drop Zone */
     .drop-zone {
       border: 2px dashed rgba(59, 130, 246, 0.4);
       border-radius: 10px;
@@ -105,8 +102,11 @@
     }
 
     .drop-icon {
-      font-size: 28px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
       margin-bottom: 4px;
+      letter-spacing: 1px;
     }
 
     .drop-text {
@@ -121,7 +121,6 @@
       margin-top: 2px;
     }
 
-    /* Preview Area with Transparency Checkerboard */
     .preview-container {
       display: flex;
       gap: 14px;
@@ -190,7 +189,6 @@
       color: #fff;
     }
 
-    /* Sliders & Controls */
     .control-row {
       display: flex;
       align-items: center;
@@ -221,7 +219,6 @@
       color: #38bdf8;
     }
 
-    /* Quick Test Buttons */
     .test-btn-group {
       display: flex;
       gap: 6px;
@@ -267,7 +264,6 @@
       background: rgba(148, 163, 184, 0.3);
     }
 
-    /* Message Input */
     .input-box {
       width: 100%;
       background: rgba(15, 23, 42, 0.8);
@@ -283,7 +279,6 @@
       border-color: var(--primary);
     }
 
-    /* Bottom Action Bar */
     .actions {
       display: flex;
       gap: 8px;
@@ -332,17 +327,17 @@
 <body>
   <header>
     <div>
-      <h1>⚙️ AvatarHUD 설정</h1>
+      <h1>AvatarHUD 설정</h1>
       <div class="subtitle">투명 누끼 스탠딩 이미지 및 말풍선 관리자</div>
     </div>
   </header>
 
   <!-- 1. Avatar Image Card -->
   <div class="card">
-    <div class="card-title">👤 캐릭터 스탠딩 이미지 (누끼 PNG)</div>
+    <div class="card-title">[캐릭터] 스탠딩 이미지 (누끼 PNG)</div>
 
     <div class="drop-zone" id="drop-zone">
-      <div class="drop-icon">📁</div>
+      <div class="drop-icon">[FILE]</div>
       <div class="drop-text">클릭하여 이미지 파일 선택 또는 여기에 드래그 앤 드롭</div>
       <div class="drop-sub">배경이 투명한 PNG, WebP, GIF 파일 지원 (권장: 세로형 스탠딩)</div>
       <input type="file" id="file-input" accept="image/png,image/webp,image/gif" style="display: none;">
@@ -370,13 +365,13 @@
 
   <!-- 2. Speech Bubble Test Card -->
   <div class="card">
-    <div class="card-title">💬 말풍선 테스트 & 즉시 발화</div>
-    <input type="text" id="test-msg-input" class="input-box" placeholder="말풍선에 띄울 테스트 문구를 입력하세요..." value="AvatarHUD 설정이 성공적으로 적용되었습니다!">
+    <div class="card-title">[말풍선] 테스트 및 즉시 발화</div>
+    <input type="text" id="test-msg-input" class="input-box" placeholder="말풍선에 띄울 테스트 문구를 입력하세요..." value="AvatarHUD 설정이 성공적으로 적용되었습니다.">
     
     <div class="test-btn-group">
-      <button class="test-btn btn-working" id="btn-test-working">🔄 작업 중 테스트</button>
-      <button class="test-btn btn-done" id="btn-test-done">✅ 완료 테스트</button>
-      <button class="test-btn btn-idle" id="btn-test-idle">💤 대기 복귀</button>
+      <button class="test-btn btn-working" id="btn-test-working">[작업 중] 테스트</button>
+      <button class="test-btn btn-done" id="btn-test-done">[완료] 테스트</button>
+      <button class="test-btn btn-idle" id="btn-test-idle">[대기] 복귀</button>
     </div>
   </div>
 
@@ -431,7 +426,6 @@
     scaleSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value).toFixed(2);
       scaleVal.textContent = `${val}x`;
-      // Preview live scale via POST
       fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -442,7 +436,6 @@
     // Drop zone click
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Drag and drop events
     ['dragenter', 'dragover'].forEach(name => {
       dropZone.addEventListener(name, (e) => {
         e.preventDefault();
@@ -483,7 +476,6 @@
         infoFilename.textContent = file.name;
         infoSize.textContent = `${(file.size / 1024).toFixed(1)} KB (선택됨)`;
 
-        // Automatically sync to live HUD immediately
         fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
