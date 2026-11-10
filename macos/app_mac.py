@@ -120,8 +120,7 @@ def main():
         frameless=True,
         transparent=True,
         on_top=on_top,
-        easy_drag=True,
-        background_color='#00000000'
+        easy_drag=True
     )
 
     apply_macos_window_tweaks(window)

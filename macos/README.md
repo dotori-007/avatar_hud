@@ -58,7 +58,12 @@ Apple Silicon(M1, M2, M3, M4) 및 Intel 기반 Mac에서 AvatarHUD를 원활하�
 
 ## 터미널 및 AI CLI 연동 호출
 
-터미널이나 쉘 스크립트에서 한 줄로 바탕화면 캐릭터 말풍선을 갱신할 수 있습니다:
+맥북 환경에서도 아래 단 한 줄로 3대 AI CLI(Antigravity, Codex, Claude Code)를 원스톱 자동 등록할 수 있습니다:
+```bash
+python3 setup_cli.py --auto
+```
+
+터미널이나 쉘 스크립트에서 수동으로 바탕화면 캐릭터 말풍선을 갱신할 수도 있습니다:
 
 ```bash
 # 1) 작업 착수 알림

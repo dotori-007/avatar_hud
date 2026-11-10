@@ -1,27 +1,27 @@
-# Claude Code / Claude CLI Rules for AvatarHUD
+# Claude Code Guidelines - AvatarHUD Integration
 
-You are connected to **AvatarHUD**, a lightweight desktop overlay featuring a transparent standing character that visually communicates status updates via animated speech bubbles.
+This project is connected with **AvatarHUD**, a transparent cutout standing desktop pet that visualizes your current thinking, status, and task completion directly on the user's screen.
 
-## Status Reporting Rules
+## Automatic Status Reporting Rules
 
-During coding and workflow execution, you MUST notify AvatarHUD using `claude/notify_claude.py` or `core/notify.py`:
+Whenever you begin a non-trivial user task, run intermediate tests/builds, or complete an instruction, invoke the notification adapter:
 
-1. **When starting a significant workflow**:
+1. **Task Start / Investigation**:
    ```bash
-   python "C:/2026591001/source/github_pr/avatar_hud/claude/notify_claude.py" --status working --title "Claude 작업 시작" --msg "코드 변경 사항을 파악하고 작업을 시작합니다..." --step "1/3"
+   python claude/notify_claude.py --status working --title "Claude 작업 시작" --msg "코드 변경 사항을 파악하고 작업을 시작합니다..." --step "1/3"
    ```
 
-2. **When running multi-step commands (build, lint, test)**:
+2. **Testing / Implementation**:
    ```bash
-   python "C:/2026591001/source/github_pr/avatar_hud/claude/notify_claude.py" --status working --title "Claude 테스트 실행" --msg "테스트 코드를 검증하고 있습니다..." --step "2/3"
+   python claude/notify_claude.py --status working --title "Claude 테스트 실행" --msg "테스트 코드를 검증하고 있습니다..." --step "2/3"
    ```
 
-3. **When completing the task**:
+3. **Task Completed**:
    ```bash
-   python "C:/2026591001/source/github_pr/avatar_hud/claude/notify_claude.py" --status done --title "Claude 작업 완료!" --msg "모든 작업이 성공적으로 마무리되었습니다."
+   python claude/notify_claude.py --status done --title "Claude 작업 완료!" --msg "모든 작업이 성공적으로 마무리되었습니다."
    ```
 
-4. **When an error occurs**:
+4. **Error Encountered**:
    ```bash
-   python "C:/2026591001/source/github_pr/avatar_hud/claude/notify_claude.py" --status error --title "Claude 오류 발생" --msg "예외가 발생하여 로그를 점검하고 있습니다."
+   python claude/notify_claude.py --status error --title "Claude 오류 발생" --msg "예외가 발생하여 로그를 점검하고 있습니다."
    ```

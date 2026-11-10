@@ -13,21 +13,24 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
-from notify import notify_status
+from notify import notify_status, is_server_alive, spawn_server_daemon
 
 def test_flow():
     print("=" * 60)
     print("[AvatarHUD] Starting Flow Verification Test")
     print("=" * 60)
 
-    # 1. Health check
+    # 1. Health check & Auto-daemon launch
+    if not is_server_alive():
+        print("[INFO] Server offline, automatically launching daemon...")
+        spawn_server_daemon()
+
     try:
-        with urllib.request.urlopen("http://127.0.0.1:8765/api/health", timeout=2.0) as res:
+        with urllib.request.urlopen("http://127.0.0.1:8765/api/health", timeout=2.5) as res:
             data = json.loads(res.read().decode('utf-8'))
             print(f"[PASS] Server Health: OK ({data.get('app')})")
     except Exception as e:
         print(f"[FAIL] Server is not reachable at http://127.0.0.1:8765: {e}")
-        print("[HINT] Run `python core/app.py --server-only` in another terminal first.")
         return False
 
     # 2. Working Step 1

@@ -163,7 +163,7 @@ def sse_stream():
                 yield f"data: {msg}\n\n"
             except queue.Empty:
                 yield ": keep-alive\n\n"
-    except GeneratorExit:
+    except (GeneratorExit, Exception):
         pass
     finally:
         with sse_lock:
@@ -296,8 +296,7 @@ def main():
         'height': height,
         'frameless': True,
         'transparent': True,
-        'on_top': on_top,
-        'background_color': '#00000000'
+        'on_top': on_top
     }
     if sys.platform == 'darwin':
         window_kwargs['easy_drag'] = True

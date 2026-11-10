@@ -6,29 +6,101 @@ Used by Antigravity CLI, Codex CLI, Claude CLI, and custom scripts to update Ava
 """
 
 import sys
+import os
 import json
+import time
 import argparse
+import subprocess
 import urllib.request
 import urllib.error
 
 # Ensure UTF-8 output on Windows
 if sys.platform == 'win32':
-    import codecs
-    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
-    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+    if hasattr(sys.stderr, 'reconfigure'):
+        try:
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
 
 DEFAULT_HOST = '127.0.0.1'
 DEFAULT_PORT = 8765
 
-def notify_status(status="working", title=None, message="", step="", elapsed=None, host=DEFAULT_HOST, port=DEFAULT_PORT):
+def is_server_alive(host=DEFAULT_HOST, port=DEFAULT_PORT):
+    """Check whether AvatarHUD HTTP server is responding."""
+    try:
+        url = f"http://{host}:{port}/api/health"
+        with urllib.request.urlopen(url, timeout=0.8) as res:
+            return res.status == 200
+    except Exception:
+        return False
+
+def spawn_server_daemon(host=DEFAULT_HOST, port=DEFAULT_PORT):
     """
-    Send status update to AvatarHUD REST API.
+    Launch AvatarHUD transparent window in the background if not already running.
+    """
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    app_script = os.path.join(repo_root, "core", "app.py")
+    if sys.platform == 'darwin':
+        mac_app = os.path.join(repo_root, "macos", "app_mac.py")
+        if os.path.exists(mac_app):
+            app_script = mac_app
+
+    if not os.path.exists(app_script):
+        return False
+
+    cmd = [sys.executable, app_script]
+
+    try:
+        if sys.platform == 'win32':
+            # Run detached from terminal process group with DEVNULL streams
+            subprocess.Popen(
+                cmd,
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                close_fds=True,
+                cwd=repo_root
+            )
+        else:
+            subprocess.Popen(
+                cmd,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                preexec_fn=os.setpgrp if hasattr(os, 'setpgrp') else None,
+                close_fds=True,
+                cwd=repo_root
+            )
+    except Exception as e:
+        return False
+
+    # Wait up to 3.5 seconds for server to be responsive
+    start = time.time()
+    while time.time() - start < 3.5:
+        if is_server_alive(host, port):
+            return True
+        time.sleep(0.2)
+    return is_server_alive(host, port)
+
+def notify_status(status="working", title=None, message="", step="", elapsed=None, host=DEFAULT_HOST, port=DEFAULT_PORT, ensure_server=True):
+    """
+    Send status update to AvatarHUD REST API. Auto-launches server daemon if down.
     :param status: 'working' | 'done' | 'idle' | 'error'
     :param title: Main bubble title
     :param message: Detailed description
     :param step: Step badge string (e.g. '2/5')
     :param elapsed: Elapsed time in seconds
+    :param ensure_server: Auto-launch daemon if server is down
     """
+    if ensure_server and not is_server_alive(host, port):
+        spawn_server_daemon(host, port)
+
     url = f"http://{host}:{port}/api/status"
     payload = {
         "status": status,
@@ -78,6 +150,7 @@ def main():
     parser.add_argument('--elapsed', type=int, default=None, help="Elapsed time in seconds")
     parser.add_argument('--port', '-p', type=int, default=DEFAULT_PORT, help="AvatarHUD port (default: 8765)")
     parser.add_argument('--host', type=str, default=DEFAULT_HOST, help="AvatarHUD host (default: 127.0.0.1)")
+    parser.add_argument('--no-launch', action='store_true', help="Do not auto-launch daemon if server is down")
 
     args = parser.parse_args()
 
@@ -88,7 +161,8 @@ def main():
         step=args.step,
         elapsed=args.elapsed,
         host=args.host,
-        port=args.port
+        port=args.port,
+        ensure_server=not args.no_launch
     )
 
     if success:
