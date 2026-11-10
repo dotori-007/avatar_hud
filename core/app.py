@@ -289,16 +289,20 @@ def main():
     on_top = config.get('always_on_top', True)
 
     print(f"[AvatarHUD] Launching transparent window ({width}x{height}, on_top={on_top})...")
-    window = webview.create_window(
-        title='AvatarHUD',
-        url=url,
-        width=width,
-        height=height,
-        frameless=True,
-        transparent=True,
-        on_top=on_top,
-        background_color='#00000000'
-    )
+    window_kwargs = {
+        'title': 'AvatarHUD',
+        'url': url,
+        'width': width,
+        'height': height,
+        'frameless': True,
+        'transparent': True,
+        'on_top': on_top,
+        'background_color': '#00000000'
+    }
+    if sys.platform == 'darwin':
+        window_kwargs['easy_drag'] = True
+
+    window = webview.create_window(**window_kwargs)
 
     webview.start(debug=False)
 

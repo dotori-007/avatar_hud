@@ -2,9 +2,10 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
+[![OS Support](https://img.shields.io/badge/OS-Windows%20%7C%20macOS-blue.svg)](#macos-macbook-호환-지원)
 [![CLI Support](https://img.shields.io/badge/CLI-Antigravity%20%7C%20Codex%20%7C%20Claude-blueviolet.svg)](#3대-ai-cli-지원-안내)
 
-사용자가 지정한 투명 누끼 스탠딩 인물/캐릭터(Transparent Cutout Standing PNG)가 윈도우 바탕화면에 자연스럽게 상시 상주하며, Antigravity CLI, Codex CLI, Claude CLI 에이전트의 실시간 작업 상태와 최종 완료 보고를 시각화해 주는 초경량 데스크톱 HUD 시스템입니다.
+사용자가 지정한 투명 누끼 스탠딩 인물/캐릭터(Transparent Cutout Standing PNG)가 윈도우 및 맥북(macOS) 바탕화면에 자연스럽게 상시 상주하며, Antigravity CLI, Codex CLI, Claude CLI 에이전트의 실시간 작업 상태와 최종 완료 보고를 시각화해 주는 초경량 데스크톱 HUD 시스템입니다.
 
 ---
 
@@ -12,23 +13,26 @@
 
 1. **오로지 투명 누끼 스탠딩 모드 전용 (Transparent Cutout Standing Only)**:
    - 불필요한 사각 박스나 불투명 프레임을 배제하고, 배경이 투명한 인물/캐릭터 스탠딩 일러스트만 바탕화면에 자연스럽게 렌더링됩니다.
-2. **상시 스탠딩 상주 (Persistent Desktop Companion)**:
+2. **크로스 플랫폼 지원 (Windows & macOS MacBook)**:
+   - 윈도우 데스크톱 및 Apple Silicon(M1/M2/M3/M4) / Intel MacBook 환경 완벽 지원.
+   - macOS Cocoa WKWebView 기반 투명 프레임 및 Mission Control 가상 데스크톱(Spaces) 상주 지원.
+3. **상시 스탠딩 상주 (Persistent Desktop Companion)**:
    - 화면에서 숨거나 사라지지 않고 항상 바탕화면(원하는 위치)에 상주합니다.
-   - 캐릭터를 마우스로 자유롭게 드래그하여 원하는 위치로 옮길 수 있으며, 마우스 휠로 크기를 자유롭게 확대/축소할 수 있습니다.
-3. **만화풍 순백색 다이내믹 말풍선 (Clean Pure White Speech Bubble)**:
+   - 캐릭터를 마우스/트랙패드로 자유롭게 드래그하여 원하는 위치로 옮길 수 있으며, 휠 스크롤로 크기를 자유롭게 확대/축소할 수 있습니다.
+4. **만화풍 순백색 다이내믹 말풍선 (Clean Pure White Speech Bubble)**:
    - antiy-zunda 시그니처 순백색 카드 UI와 바운스 인 애니메이션 완벽 구현.
    - **작업 중 (Working)**: 블루 소프트 칩 + 단계(Step) 배지 + 부드러운 상태 표시.
    - **작업 완료 (Done)**: 경쾌한 바운스 효과 + 에메랄드 그린 완료 배지 + 소요 시간 태그 및 결과 요약.
    - **오류 발생 (Error)**: 레드 경고 배지 + 예외 상황 요약.
    - **대기 상태 (Idle)**: 화면을 가리지 않는 미니멀 순백색 말풍선.
-4. **전용 그래픽 환경설정창 (Settings Window)**:
-   - 탐색기에서 투명 누끼 이미지를 끌어다 놓기만 하면 즉시 반영되는 드래그 앤 드롭 업로더.
+5. **전용 그래픽 환경설정창 (Settings Window)**:
+   - 탐색기 및 Finder에서 투명 누끼 이미지를 끌어다 놓기만 하면 즉시 반영되는 드래그 앤 드롭 업로더.
    - 투명도 확인을 위한 실시간 체커보드 프리뷰.
    - 캐릭터 크기 배율(Scale) 슬라이더 (50% ~ 200%).
    - 말풍선 상태별 실시간 발화 테스트 기능.
-5. **3대 메이저 AI CLI 완벽 지원**:
+6. **3대 메이저 AI CLI 완벽 지원**:
    - Antigravity CLI, Codex CLI, Claude CLI (Claude Code) 전용 연동 디렉토리 및 규칙 파일 완비.
-6. **클린 UI 표준**:
+7. **클린 UI 표준**:
    - 프로젝트 전체 소스코드, UI, 문서에서 이모티콘을 배제한 깔끔하고 신뢰도 높은 디자인.
 
 ---
@@ -50,15 +54,14 @@ flowchart TD
         Stream["실시간 SSE 브로드캐스터"]
     end
 
-    subgraph Overlay["투명 데스크톱 뷰 (pywebview)"]
-        Standing["투명 누끼 스탠딩 캐릭터<br/>(드래그 이동 / 휠 크기 조절)"]
-        Bubble["동적 반응형 순백색 말풍선<br/>진행 바, 완료 배지, 상태 칩"]
+    subgraph Platforms["운영체제별 뷰포트"]
+        WinView["Windows 투명 오버레이<br/>(DWM Webview2)"]
+        MacView["macOS 투명 오버레이<br/>(Cocoa WKWebView)"]
     end
 
-    subgraph Settings["환경설정창 (core/static/settings.html)"]
-        DropZone["드래그 앤 드롭 업로더"]
-        Checker["체커보드 투명도 프리뷰"]
-        Slider["크기 배율 슬라이더"]
+    subgraph Overlay["투명 데스크톱 뷰"]
+        Standing["투명 누끼 스탠딩 캐릭터<br/>(드래그 이동 / 휠 크기 조절)"]
+        Bubble["동적 반응형 순백색 말풍선<br/>진행 바, 완료 배지, 상태 칩"]
     end
 
     AG --> CLI
@@ -67,10 +70,12 @@ flowchart TD
     CLI -->|POST /api/status| Server
     Server --> State
     State --> Stream
-    Stream -->|실시간 이벤트 스트림| Overlay
-    Overlay --> Standing
-    Overlay --> Bubble
-    Settings -->|POST /api/config| Server
+    Stream --> WinView
+    Stream --> MacView
+    WinView --> Standing
+    WinView --> Bubble
+    MacView --> Standing
+    MacView --> Bubble
 ```
 
 ---
@@ -80,10 +85,19 @@ flowchart TD
 ```
 avatar_hud/
 ├── README.md               # 프로젝트 전체 안내서
-├── run.bat                 # 투명 HUD 원클릭 실행 스크립트
+├── run.bat                 # 윈도우 원클릭 실행 스크립트
+├── run.sh                  # macOS / Linux 원클릭 실행 스크립트
 ├── open_settings.bat       # 환경설정창 원클릭 실행 스크립트
-├── requirements.txt        # 필요 파이썬 패키지 목록 (pywebview, bottle, requests, Pillow)
+├── requirements.txt        # 기본 파이썬 패키지 목록
 ├── notify.py               # 루트 단축 알림 래퍼 도구
+├── macos/                  # [macOS MacBook 호환 전용 디렉토리]
+│   ├── README.md           # 맥북 전용 완벽 가이드
+│   ├── run_mac.sh          # 맥북 원클릭 런처 (Cocoa 투명 윈도우)
+│   ├── setup_mac.sh        # 맥북 가상환경 및 PyObjC 의존성 자동 설치기
+│   ├── open_settings_mac.sh # 맥북 브라우저 설정창 원클릭 호출 스크립트
+│   ├── app_mac.py          # macOS 최적화 런처 (Spaces/Mission Control 연동)
+│   ├── notify_mac.py       # macOS 터미널/쉘 전용 알림 어댑터
+│   └── requirements_mac.txt # macOS 전용 의존성 목록
 ├── core/                   # [공통 코어 엔진]
 │   ├── app.py              # pywebview 투명 윈도우 + 내장 REST/SSE 서버
 │   ├── notify.py           # 상태 전송 메인 라이브러리 및 CLI 도구
@@ -117,21 +131,27 @@ avatar_hud/
 
 ## 빠른 시작 (Quick Start)
 
-### 1. 패키지 설치
+### Windows 환경
 ```bash
+# 1) 패키지 설치
 pip install -r requirements.txt
-```
 
-### 2. AvatarHUD 실행
-```bash
-# 윈도우 원클릭 실행
+# 2) 실행 (원클릭)
 run.bat
-
-# 또는 파이썬 직접 실행
-python core/app.py
 ```
 
-### 3. 알림 테스트 (수동 호출)
+### macOS (MacBook) 환경
+```bash
+# 1) 맥북 환경 설정 (가상환경 생성 및 PyObjC 의존성 자동 설치)
+./macos/setup_mac.sh
+
+# 2) 실행 (원클릭)
+./macos/run_mac.sh
+# 또는 루트에서
+./run.sh
+```
+
+### 알림 테스트 (수동 호출)
 새 터미널 창을 열고 아래 명령어로 캐릭터 말풍선이 실시간 반응하는지 확인합니다:
 ```bash
 # 1) 작업 착수 알림
@@ -146,6 +166,19 @@ python notify.py --status done --title "분석 및 모델 검증 완료!" --msg 
 # 4) 대기 모드 복귀
 python notify.py --status idle
 ```
+
+---
+
+## macOS (MacBook) 호환 지원
+
+맥북 사용자를 위해 [`macos/`](./macos/README.md) 전용 디렉토리를 제공하며, 다음과 같은 맥북 특화 최적화가 적용되어 있습니다:
+
+* **Apple Silicon M 시리즈 네이티브 지원**: M1, M2, M3, M4 칩셋 및 Intel x86_64 Mac 완벽 호환.
+* **Cocoa 투명 프레임**: macOS의 Cocoa 및 WebKit 투명도 엔진을 활용한 깔끔한 무테두리 렌더링.
+* **Spaces 및 Mission Control 연동**: 가상 데스크톱을 스와이프 전환해도 캐릭터가 항상 고정 상주(`NSWindowCollectionBehaviorCanJoinAllSpaces`).
+* **트랙패드 제스처**: 두 손가락 스크롤 줌 및 트랙패드 드래그 이동 완벽 지원.
+
+자세한 맥북 사용법은 [`macos/README.md`](./macos/README.md) 문서를 참조하십시오.
 
 ---
 
@@ -171,13 +204,16 @@ python notify.py --status idle
 
 사용자가 연예인 사진, 버튜버, 애니메이션 등 원하는 투명 누끼 PNG를 아주 쉽게 넣고 변경할 수 있도록 전용 그래픽 환경설정창을 제공합니다.
 
-### 설정창 여는 3가지 방법
+### 설정창 여는 방법
 1. **바탕화면 캐릭터 우클릭**: 바탕화면에 서 있는 캐릭터를 마우스 오른쪽 클릭하면 즉시 설정창이 열립니다.
 2. **호버 툴바의 SET 버튼 클릭**: 캐릭터에 마우스를 올렸을 때 나타나는 SET 버튼 클릭.
-3. **원클릭 실행 파일**: 프로젝트 루트의 `open_settings.bat`을 더블 클릭하거나 웹 브라우저에서 `http://127.0.0.1:8765/settings` 접속.
+3. **원클릭 실행 스크립트**:
+   * Windows: `open_settings.bat` 실행
+   * macOS: `./macos/open_settings_mac.sh` 실행
+   * 브라우저: `http://127.0.0.1:8765/settings` 접속
 
 ### 이미지 변경 기능
-* **드래그 앤 드롭 (Drag & Drop)**: 탐색기에서 투명 누끼 PNG/WebP 파일을 설정창의 점선 영역으로 끌어다 놓기만 하면 즉시 바탕화면에 실시간 반영됩니다.
+* **드래그 앤 드롭 (Drag & Drop)**: 탐색기 및 Finder에서 투명 누끼 PNG/WebP 파일을 설정창의 점선 영역으로 끌어다 놓기만 하면 즉시 바탕화면에 실시간 반영됩니다.
 * **실시간 체커보드 투명도 미리보기**: 투명 알파 채널이 잘 뚫려 있는지 체커보드 프리뷰로 확인 가능.
 * **크기 배율 슬라이더**: 50% ~ 200% 배율을 슬라이더로 조절하여 바탕화면에 딱 맞는 크기로 맞춤.
 * **말풍선 실시간 테스트**: 작업 중, 완료, 대기 상태를 설정창에서 즉시 버튼으로 테스트 가능.
