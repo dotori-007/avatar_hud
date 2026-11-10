@@ -1,0 +1,10 @@
+{
+  "cli_name": "Codex CLI",
+  "avatar_hud_url": "http://127.0.0.1:8765",
+  "auto_notify_on_step": true,
+  "default_titles": {
+    "working": "Codex 코딩 중...",
+    "done": "Codex 완료!",
+    "error": "Codex 오류"
+  }
+}

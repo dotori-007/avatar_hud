@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AvatarHUD</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="hud-container">
+    <!-- Standing Avatar Character -->
+    <div id="avatar-wrapper" class="pywebview-drag-region" title="드래그하여 이동 / 마우스 휠로 크기 조절">
+      <img id="avatar-img" src="/static/default_avatar.png" alt="Avatar Standing" draggable="false">
+      <div class="avatar-controls">
+        <button id="btn-change-avatar" title="캐릭터 이미지 변경">📷</button>
+        <button id="btn-scale-up" title="확대 (+)">➕</button>
+        <button id="btn-scale-down" title="축소 (-)">➖</button>
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/png,image/webp,image/gif" style="display: none;">
+    </div>
+
+    <!-- Speech Bubble Overlay -->
+    <div id="speech-bubble" class="speech-bubble status-idle">
+      <div class="bubble-arrow"></div>
+      
+      <div class="bubble-header">
+        <div class="status-badge" id="status-badge">
+          <span class="status-indicator"></span>
+          <span class="status-text" id="status-text">대기 중</span>
+        </div>
+        <div class="step-badge" id="step-badge" style="display: none;"></div>
+        <button id="btn-minimize-bubble" class="btn-icon" title="말풍선 접기">✕</button>
+      </div>
+
+      <div class="bubble-body">
+        <div class="bubble-title" id="bubble-title">AvatarHUD 준비 완료</div>
+        <div class="bubble-message" id="bubble-message">명령을 기다리고 있는 중입니다. 작업이 시작되면 실시간 현황이 여기에 표시됩니다.</div>
+      </div>
+
+      <div class="bubble-footer">
+        <span class="elapsed-time" id="elapsed-time"></span>
+        <span class="timestamp" id="timestamp"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
